@@ -9,7 +9,7 @@ namespace DynamicList
         {
             InitializeComponent();
         }
-        
+
         public void AddColumn(string headingText, int width = 1, HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left)
         {
             listView.Columns.Add(headingText, width, horizontalAlignment);
