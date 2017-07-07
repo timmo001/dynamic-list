@@ -20,9 +20,9 @@ namespace DynamicList
             listView.Items.Add(text);
         }
 
-        public void SetCheckboxes(bool on)
+        public void SetCheckboxes(bool checkboxes)
         {
-            listView.CheckBoxes = on;
+            listView.CheckBoxes = checkboxes;
         }
 
         public void AutoResizeColumns()
