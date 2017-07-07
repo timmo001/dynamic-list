@@ -1,15 +1,23 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace DynamicList
 {
     public partial class DynamicList : Form
     {
+        #region Events
+        public event EventHandler ItemSelected;
+        #endregion
+
+        #region Constructor
         public DynamicList()
         {
             InitializeComponent();
         }
+        #endregion
 
+        #region Public Methods
         public void AddColumn(string headingText, int width = 1, HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left)
         {
             listView.Columns.Add(headingText, width, horizontalAlignment);
@@ -49,6 +57,13 @@ namespace DynamicList
         {
             listView.BorderStyle = borderStyle;
         }
+        #endregion
 
+        #region Private Events
+        private void listView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ItemSelected(sender, e);
+        }
+        #endregion
     }
 }
