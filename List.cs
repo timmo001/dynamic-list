@@ -1,13 +1,12 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Windows.Forms;
 
 namespace DynamicList
 {
     public partial class DynamicList : Form
     {
-        #region Events
-        public event EventHandler ItemSelected;
+        #region Globals
+        public Font defaultFont = new Font(new FontFamily("Microsoft Sans Serif"), 8.25f, FontStyle.Regular);
         #endregion
 
         #region Constructor
@@ -23,9 +22,12 @@ namespace DynamicList
             listView.Columns.Add(headingText, width, horizontalAlignment);
         }
 
-        public void AddEntry(string text)
+        public void AddEntry(string[] items)
         {
-            listView.Items.Add(text);
+            //ListViewItem listViewItem = new ListViewItem(items);
+            //if (font != null) listViewItem.Font = font;
+            //listView.Items.Add(listViewItem);
+            listView.Items.Add(new ListViewItem(items));
         }
 
         public void SetCheckboxes(bool checkboxes)
@@ -48,9 +50,14 @@ namespace DynamicList
             listView.ForeColor = ColorTranslator.FromHtml(hexColor);
         }
 
-        public void SetFont(string familyName = "Microsoft Sans Serif", float size = 8.25f, FontStyle style = FontStyle.Regular)
+        public void SetFont(Font font)
         {
-            listView.Font = new Font(new FontFamily(familyName), size, style);
+            listView.Font = font;
+        }
+
+        public Font MakeFont(string familyName = "Microsoft Sans Serif", float size = 8.25f, FontStyle style = FontStyle.Regular)
+        {
+            return new Font(new FontFamily(familyName), size, style);
         }
 
         public void BorderStyle(BorderStyle borderStyle)
@@ -59,11 +66,5 @@ namespace DynamicList
         }
         #endregion
 
-        #region Private Events
-        private void listView_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            ItemSelected(sender, e);
-        }
-        #endregion
     }
 }
