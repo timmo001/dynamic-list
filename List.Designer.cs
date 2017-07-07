@@ -21,43 +21,40 @@
         }
 
         #region Windows Form Designer generated code
-
         /// <summary>
         /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
         {
-            this.listView = new System.Windows.Forms.ListView();
-            this.SuspendLayout();
+            listView = new System.Windows.Forms.ListView();
+            SuspendLayout();
             // 
             // listView
             // 
-            this.listView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listView.FullRowSelect = true;
-            this.listView.Location = new System.Drawing.Point(0, 0);
-            this.listView.Name = "listView";
-            this.listView.Size = new System.Drawing.Size(1014, 677);
-            this.listView.TabIndex = 0;
-            this.listView.UseCompatibleStateImageBehavior = false;
-            this.listView.View = System.Windows.Forms.View.Details;
+            listView.Dock = System.Windows.Forms.DockStyle.Fill;
+            listView.FullRowSelect = true;
+            listView.Location = new System.Drawing.Point(0, 0);
+            listView.Name = "listView";
+            listView.Size = new System.Drawing.Size(1014, 677);
+            listView.TabIndex = 0;
+            listView.UseCompatibleStateImageBehavior = false;
+            listView.View = System.Windows.Forms.View.Details;
             // 
             // DynamicList
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1014, 677);
-            this.Controls.Add(this.listView);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Name = "DynamicList";
-            this.Text = "Dynamic List";
-            this.ResumeLayout(false);
-
+            AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            ClientSize = new System.Drawing.Size(1014, 677);
+            Controls.Add(listView);
+            FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            Name = "DynamicList";
+            Text = "Dynamic List";
+            ResumeLayout(false);
         }
-
         #endregion
 
-        private System.Windows.Forms.ListView listView;
+        public System.Windows.Forms.ListView listView;
     }
 }
 

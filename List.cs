@@ -1,5 +1,4 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Windows.Forms;
 
 namespace DynamicList
@@ -10,7 +9,7 @@ namespace DynamicList
         {
             InitializeComponent();
         }
-
+        
         public void AddColumn(string headingText, int width = 1, HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left)
         {
             listView.Columns.Add(headingText, width, horizontalAlignment);
@@ -46,9 +45,9 @@ namespace DynamicList
             listView.Font = new Font(new FontFamily(familyName), size, style);
         }
 
-        public void BorderStyle()
+        public void BorderStyle(BorderStyle borderStyle)
         {
-
+            listView.BorderStyle = borderStyle;
         }
 
     }
