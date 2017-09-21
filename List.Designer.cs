@@ -31,16 +31,17 @@
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SuspendLayout();
             // 
-            // listView
+            // mListView
             // 
             this.mListView.AllowColumnReorder = true;
+            this.mListView.AutoArrange = false;
             this.mListView.CheckBoxes = true;
             this.mListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1});
             this.mListView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mListView.FullRowSelect = true;
             this.mListView.Location = new System.Drawing.Point(0, 0);
-            this.mListView.Name = "listView";
+            this.mListView.Name = "mListView";
             this.mListView.Size = new System.Drawing.Size(800, 600);
             this.mListView.TabIndex = 0;
             this.mListView.UseCompatibleStateImageBehavior = false;

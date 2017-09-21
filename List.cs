@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace DynamicList
@@ -31,19 +33,22 @@ namespace DynamicList
             mListView.Columns.Add(columnHeader);
         }
 
-        public void AddEntry(string[] items)
+        public void AddEntry(object[] items, Font font = null)
         {
-            //ListViewItem listViewItem = new ListViewItem(items);
-            //if (font != null) listViewItem.Font = font;
-            //listView.Items.Add(listViewItem);
-            if (mListView.CheckBoxes)
-            {
-                List<string> arrayList = new List<string>();
-                arrayList.Add("");
-                arrayList.AddRange(items);
-                items = arrayList.ToArray();
-            }
-            mListView.Items.Add(new ListViewItem(items));
+            // Create List<object> to store object array
+            List<object> list = new List<object>();
+            if (mListView.CheckBoxes) list.Add("");
+            list.AddRange(items);
+            // Convert List<object> to string array
+            string[] itemsStr = ((IEnumerable)list).Cast<object>()
+                                 .Select(x => x.ToString())
+                                 .ToArray();
+            // Create ListViewItem from string array
+            ListViewItem listViewItem = new ListViewItem(itemsStr);
+            // Set props
+            if (font != null) listViewItem.Font = font;
+            // Add the ListViewItem
+            mListView.Items.Add(listViewItem);
         }
 
         public void SetCheckboxes(bool checkboxes)
