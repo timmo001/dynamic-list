@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace DynamicList
 {
-    public partial class DynamicList : Form
+    public partial class List : Form
     {
         #region Globals
         public Font defaultFont = new Font(new FontFamily("Microsoft Sans Serif"), 8.25f, FontStyle.Regular);
@@ -14,16 +14,21 @@ namespace DynamicList
         #endregion
 
         #region Constructor
-        public DynamicList()
+        public List()
         {
             InitializeComponent();
         }
         #endregion
 
         #region Public Methods
-        public void AddColumn(string headingText, int width = 1, HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left)
+        public void AddColumn(string headingText, int width = 1, HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left, bool hidden = false, ColumnHeaderAutoResizeStyle resizeStyle = ColumnHeaderAutoResizeStyle.None)
         {
-            listView.Columns.Add(headingText, width, horizontalAlignment);
+            ColumnHeader columnHeader = new ColumnHeader();
+            columnHeader.Text = headingText;
+            columnHeader.Width = hidden ? 0 : width;
+            columnHeader.TextAlign = horizontalAlignment;
+            columnHeader.AutoResize(resizeStyle);
+            mListView.Columns.Add(columnHeader);
         }
 
         public void AddEntry(string[] items)
@@ -31,40 +36,40 @@ namespace DynamicList
             //ListViewItem listViewItem = new ListViewItem(items);
             //if (font != null) listViewItem.Font = font;
             //listView.Items.Add(listViewItem);
-            if (listView.CheckBoxes)
+            if (mListView.CheckBoxes)
             {
                 List<string> arrayList = new List<string>();
                 arrayList.Add("");
                 arrayList.AddRange(items);
                 items = arrayList.ToArray();
             }
-            listView.Items.Add(new ListViewItem(items));
+            mListView.Items.Add(new ListViewItem(items));
         }
 
         public void SetCheckboxes(bool checkboxes)
         {
-            listView.CheckBoxes = checkboxes;
-            listView.Columns.Add("", 20, HorizontalAlignment.Center);
+            mListView.CheckBoxes = checkboxes;
+            mListView.Columns.Add("", 20, HorizontalAlignment.Center);
         }
 
         public void AutoResizeColumns()
         {
-            listView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
+            mListView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
         }
 
         public void SetBackgroundColor(string hexColor)
         {
-            listView.BackColor = ColorTranslator.FromHtml(hexColor);
+            mListView.BackColor = ColorTranslator.FromHtml(hexColor);
         }
 
         public void SetForegroundColor(string hexColor)
         {
-            listView.ForeColor = ColorTranslator.FromHtml(hexColor);
+            mListView.ForeColor = ColorTranslator.FromHtml(hexColor);
         }
 
         public void SetFont(Font font)
         {
-            listView.Font = font;
+            mListView.Font = font;
         }
 
         public Font MakeFont(string familyName = "Microsoft Sans Serif", float size = 8.25f, FontStyle style = FontStyle.Regular)
@@ -74,12 +79,12 @@ namespace DynamicList
 
         public void BorderStyle(BorderStyle borderStyle)
         {
-            listView.BorderStyle = borderStyle;
+            mListView.BorderStyle = borderStyle;
         }
 
         private void listView_DrawColumnHeader(object sender, DrawListViewColumnHeaderEventArgs e)
         {
-            if (e.ColumnIndex == 0 && listView.CheckBoxes)
+            if (e.ColumnIndex == 0 && mListView.CheckBoxes)
             {
                 e.DrawBackground();
                 bool value = false;
@@ -112,22 +117,29 @@ namespace DynamicList
 
         private void listView_ColumnClick(object sender, ColumnClickEventArgs e)
         {
-            if (e.Column == 0 && listView.CheckBoxes)
+            if (e.Column == 0 && mListView.CheckBoxes)
             {
                 bool value = false;
                 try
                 {
-                    value = Convert.ToBoolean(this.listView.Columns[e.Column].Tag);
+                    value = Convert.ToBoolean(this.mListView.Columns[e.Column].Tag);
                 }
                 catch (Exception)
                 {
                 }
-                this.listView.Columns[e.Column].Tag = !value;
-                foreach (ListViewItem item in this.listView.Items)
+                mListView.Columns[e.Column].Tag = !value;
+                foreach (ListViewItem item in this.mListView.Items)
                     item.Checked = !value;
 
-                this.listView.Invalidate();
+                mListView.Invalidate();
             }
+        }
+
+        public void CleanupAndClose()
+        {
+            mListView.Visible = false;
+            Visible = false;
+            Close();
         }
         #endregion
 

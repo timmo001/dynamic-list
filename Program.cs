@@ -13,7 +13,7 @@ namespace DynamicList
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new DynamicList());
+            Application.Run(new List());
         }
     }
 }
