@@ -23,17 +23,19 @@ namespace DynamicList
         #endregion
 
         #region Public Methods
-        public void AddColumn(string headingText, int width = 1, HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left, bool hidden = false, ColumnHeaderAutoResizeStyle resizeStyle = ColumnHeaderAutoResizeStyle.None)
+        public void AddColumn(string headingText, int width = 1, HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left, bool hidden = false, ColumnHeaderAutoResizeStyle autoResizeStyle = ColumnHeaderAutoResizeStyle.None)
         {
+            if (hidden) mListView.SuspendLayout();
             ColumnHeader columnHeader = new ColumnHeader();
             columnHeader.Text = headingText;
-            columnHeader.Width = hidden ? 0 : width;
+            columnHeader.Width = width;
             columnHeader.TextAlign = horizontalAlignment;
-            columnHeader.AutoResize(resizeStyle);
+            columnHeader.AutoResize(autoResizeStyle);
             mListView.Columns.Add(columnHeader);
+            if (hidden) mListView.ResumeLayout();
         }
 
-        public void AddEntry(object[] items, Font font = null)
+        public void AddEntry(object[] items)
         {
             // Create List<object> to store object array
             List<object> list = new List<object>();
@@ -46,7 +48,7 @@ namespace DynamicList
             // Create ListViewItem from string array
             ListViewItem listViewItem = new ListViewItem(itemsStr);
             // Set props
-            if (font != null) listViewItem.Font = font;
+            //if (font != null) listViewItem.Font = font;
             // Add the ListViewItem
             mListView.Items.Add(listViewItem);
         }
