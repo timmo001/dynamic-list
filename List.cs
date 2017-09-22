@@ -25,7 +25,7 @@ namespace DynamicList
             // Create an instance of a ListView column sorter and assign it 
             // to the ListView control.
             lvwColumnSorter = new ListViewColumnSorter();
-            this.mListView.ListViewItemSorter = lvwColumnSorter;
+            mListView.ListViewItemSorter = lvwColumnSorter;
         }
         #endregion
 
@@ -98,10 +98,15 @@ namespace DynamicList
 
         public void CheckItems(int columnIndex, object[] items)
         {
+            List<string> itemsList = new List<string>();
+            foreach (object item in items) itemsList.Add(item.ToString());
+
             foreach (ListViewItem listViewItem in mListView.Items)
             {
-                listViewItem.Checked = items.Contains(listViewItem.SubItems[columnIndex].Text);
+                string curText = listViewItem.SubItems[columnIndex].Text;
+                listViewItem.Checked = itemsList.Contains(curText);
             }
+            mListView.Invalidate(true);
         }
 
         public object[] GetCheckedItems(int columnIndex)
@@ -145,7 +150,7 @@ namespace DynamicList
                 {
                     mListView.Columns[0].Tag = 0;
                 }
-                mListView.Invalidate();
+                mListView.Invalidate(true);
             }
             catch (Exception) { }
         }
@@ -170,7 +175,7 @@ namespace DynamicList
                 catch (Exception)
                 {
                 }
-                mListView.Invalidate();
+                mListView.Invalidate(true);
             }
             else
             {
