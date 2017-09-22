@@ -96,6 +96,14 @@ namespace DynamicList
             mListView.BorderStyle = borderStyle;
         }
 
+        public void CheckItems(int columnIndex, object[] items)
+        {
+            foreach (ListViewItem listViewItem in mListView.Items)
+            {
+                listViewItem.Checked = items.Contains(listViewItem.SubItems[columnIndex].Text);
+            }
+        }
+
         public object[] GetCheckedItems(int columnIndex)
         {
             //return mListView.CheckedItems;
