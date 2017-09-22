@@ -4,12 +4,15 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 
 namespace DynamicList
 {
     public partial class List : Form
     {
         #region Globals
+        private ListViewColumnSorter lvwColumnSorter;
+
         public Font defaultFont = new Font(new FontFamily("Microsoft Sans Serif"), 8.25f, FontStyle.Regular);
 
         public object Arrays { get; private set; }
@@ -19,10 +22,14 @@ namespace DynamicList
         public List()
         {
             InitializeComponent();
+            // Create an instance of a ListView column sorter and assign it 
+            // to the ListView control.
+            lvwColumnSorter = new ListViewColumnSorter();
+            this.mListView.ListViewItemSorter = lvwColumnSorter;
         }
         #endregion
 
-        #region Public Methods
+        #region public Methods
         public void AddColumn(string headingText, int width = 1, HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left, bool hidden = false, ColumnHeaderAutoResizeStyle autoResizeStyle = ColumnHeaderAutoResizeStyle.None)
         {
             if (hidden) mListView.SuspendLayout();
@@ -79,67 +86,27 @@ namespace DynamicList
             mListView.Font = font;
         }
 
-        public Font MakeFont(string familyName = "Microsoft Sans Serif", float size = 8.25f, FontStyle style = FontStyle.Regular)
+        public Font MakeFont(string familyName = "Microsoft Sans Serif", double size = 8.25, FontStyle style = FontStyle.Regular)
         {
-            return new Font(new FontFamily(familyName), size, style);
+            return new Font(new FontFamily(familyName), (float)size, style);
         }
 
-        public void BorderStyle(BorderStyle borderStyle)
+        public void SetBorderStyle(BorderStyle borderStyle)
         {
             mListView.BorderStyle = borderStyle;
         }
 
-        private void listView_DrawColumnHeader(object sender, DrawListViewColumnHeaderEventArgs e)
+        public object[] GetCheckedItems(int columnIndex)
         {
-            if (e.ColumnIndex == 0 && mListView.CheckBoxes)
+            //return mListView.CheckedItems;
+            object[] checkedItems = new object[mListView.CheckedItems.Count];
+            int i = 0;
+            foreach (ListViewItem listViewItem in mListView.CheckedItems)
             {
-                e.DrawBackground();
-                bool value = false;
-                try
-                {
-                    value = Convert.ToBoolean(e.Header.Tag);
-                }
-                catch (Exception)
-                {
-                }
-                CheckBoxRenderer.DrawCheckBox(e.Graphics, new Point(e.Bounds.Left + 4, e.Bounds.Top + 4),
-                    value ? System.Windows.Forms.VisualStyles.CheckBoxState.CheckedNormal :
-                    System.Windows.Forms.VisualStyles.CheckBoxState.UncheckedNormal);
+                checkedItems[i] = listViewItem.SubItems[columnIndex].Text;
+                i++;
             }
-            else
-            {
-                e.DrawDefault = true;
-            }
-        }
-
-        private void listView_DrawItem(object sender, DrawListViewItemEventArgs e)
-        {
-            e.DrawDefault = true;
-        }
-
-        private void listView_DrawSubItem(object sender, DrawListViewSubItemEventArgs e)
-        {
-            e.DrawDefault = true;
-        }
-
-        private void listView_ColumnClick(object sender, ColumnClickEventArgs e)
-        {
-            if (e.Column == 0 && mListView.CheckBoxes)
-            {
-                bool value = false;
-                try
-                {
-                    value = Convert.ToBoolean(this.mListView.Columns[e.Column].Tag);
-                }
-                catch (Exception)
-                {
-                }
-                mListView.Columns[e.Column].Tag = !value;
-                foreach (ListViewItem item in this.mListView.Items)
-                    item.Checked = !value;
-
-                mListView.Invalidate();
-            }
+            return checkedItems;
         }
 
         public void CleanupAndClose()
@@ -148,6 +115,115 @@ namespace DynamicList
             Visible = false;
             Close();
         }
+        #endregion
+
+        #region private Methods
+        private void SetCheckboxTag()
+        {
+            try
+            {
+                if (mListView.CheckedItems.Count > 0)
+                {
+                    if (mListView.CheckedItems.Count < mListView.Items.Count)
+                    {
+                        mListView.Columns[0].Tag = 1;
+                    }
+                    else
+                    {
+                        mListView.Columns[0].Tag = 2;
+                    }
+                }
+                else
+                {
+                    mListView.Columns[0].Tag = 0;
+                }
+                mListView.Invalidate();
+            }
+            catch (Exception) { }
+        }
+        #endregion
+
+        #region Events
+        private void mListView_ColumnClick(object sender, ColumnClickEventArgs e)
+        {
+            if (e.Column == 0 && mListView.CheckBoxes)
+            {
+                try
+                {
+                    int value = Convert.ToInt32(mListView.Columns[e.Column].Tag);
+                    //mListView.Columns[e.Column].Tag = value == 0 ? 2 : 0;
+                    SetCheckboxTag();
+                    foreach (ListViewItem item in mListView.Items)
+                    {
+                        if (value != 2) { item.Checked = true; }
+                        else { item.Checked = false; }
+                    }
+                }
+                catch (Exception)
+                {
+                }
+                mListView.Invalidate();
+            }
+            else
+            {
+                // Determine if clicked column is already the column that is being sorted.
+                if (e.Column == lvwColumnSorter.SortColumn)
+                {
+                    // Reverse the current sort direction for this column.
+                    if (lvwColumnSorter.Order == SortOrder.Ascending)
+                    {
+                        lvwColumnSorter.Order = SortOrder.Descending;
+                    }
+                    else
+                    {
+                        lvwColumnSorter.Order = SortOrder.Ascending;
+                    }
+                }
+                else
+                {
+                    // Set the column number that is to be sorted; default to ascending.
+                    lvwColumnSorter.SortColumn = e.Column;
+                    lvwColumnSorter.Order = SortOrder.Ascending;
+                }
+
+                // Perform the sort with these new sort options.
+                mListView.Sort();
+            }
+        }
+
+        private void mListView_DrawColumnHeader(object sender, DrawListViewColumnHeaderEventArgs e)
+        {
+            if (e.ColumnIndex == 0 && mListView.CheckBoxes)
+            {
+                e.DrawBackground();
+                CheckBoxState checkBoxState = CheckBoxState.UncheckedNormal;
+                try
+                {
+                    switch (Convert.ToInt32(e.Header.Tag))
+                    {
+                        case 0:
+                            checkBoxState = CheckBoxState.UncheckedNormal;
+                            break;
+                        case 1:
+                            checkBoxState = CheckBoxState.MixedNormal;
+                            break;
+                        case 2:
+                            checkBoxState = CheckBoxState.CheckedNormal;
+                            break;
+                    }
+                    CheckBoxRenderer.DrawCheckBox(e.Graphics, new Point(e.Bounds.Left + 4, e.Bounds.Top + 4),
+                        checkBoxState);
+                }
+                catch (Exception) { }
+            }
+            else { e.DrawDefault = true; }
+        }
+
+        private void mListView_DrawItem(object sender, DrawListViewItemEventArgs e) { e.DrawDefault = true; }
+
+        private void mListView_DrawSubItem(object sender, DrawListViewSubItemEventArgs e) { e.DrawDefault = true; }
+
+        private void mListView_ItemChecked(object sender, ItemCheckedEventArgs e) { SetCheckboxTag(); }
         #endregion
 
     }
