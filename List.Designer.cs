@@ -49,6 +49,7 @@
             this.mListView.UseCompatibleStateImageBehavior = false;
             this.mListView.View = System.Windows.Forms.View.Details;
             this.mListView.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.mListView_ColumnClick);
+            this.mListView.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.mListView_ColumnWidthChanging);
             this.mListView.DrawColumnHeader += new System.Windows.Forms.DrawListViewColumnHeaderEventHandler(this.mListView_DrawColumnHeader);
             this.mListView.DrawItem += new System.Windows.Forms.DrawListViewItemEventHandler(this.mListView_DrawItem);
             this.mListView.DrawSubItem += new System.Windows.Forms.DrawListViewSubItemEventHandler(this.mListView_DrawSubItem);
@@ -57,7 +58,7 @@
             // checkBox
             // 
             this.checkBox.Text = "";
-            this.checkBox.Width = 20;
+            this.checkBox.Width = 22;
             // 
             // List
             // 

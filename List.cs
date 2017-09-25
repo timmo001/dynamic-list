@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 
@@ -11,11 +12,14 @@ namespace DynamicList
     public partial class List : Form
     {
         #region Globals
-        private ListViewColumnSorter lvwColumnSorter;
+        private ListViewColumnSorter listViewColumnSorter;
+        private List<int> columnsHiddenList;
+        private List<Row> rowsList;
 
         public Font defaultFont = new Font(new FontFamily("Microsoft Sans Serif"), 8.25f, FontStyle.Regular);
 
         public object Arrays { get; private set; }
+        private int columnIndex;
         #endregion
 
         #region Constructor
@@ -24,32 +28,45 @@ namespace DynamicList
             InitializeComponent();
             // Create an instance of a ListView column sorter and assign it 
             // to the ListView control.
-            lvwColumnSorter = new ListViewColumnSorter();
-            mListView.ListViewItemSorter = lvwColumnSorter;
+            listViewColumnSorter = new ListViewColumnSorter();
+            mListView.ListViewItemSorter = listViewColumnSorter;
+            columnsHiddenList = new List<int>();
+            rowsList = new List<Row>();
+            columnIndex = 1;
         }
         #endregion
 
         #region public Methods
         public void AddColumn(string headingText, int width = 1, HorizontalAlignment horizontalAlignment = HorizontalAlignment.Left, bool hidden = false, ColumnHeaderAutoResizeStyle autoResizeStyle = ColumnHeaderAutoResizeStyle.None)
         {
-            if (hidden) mListView.SuspendLayout();
             ColumnHeader columnHeader = new ColumnHeader();
+            columnHeader.Text = Regex.Replace(headingText, @"\s", "");
             columnHeader.Text = headingText;
             columnHeader.Width = width;
             columnHeader.TextAlign = horizontalAlignment;
             columnHeader.AutoResize(autoResizeStyle);
-            mListView.Columns.Add(columnHeader);
-            if (hidden) mListView.ResumeLayout();
+            if (!hidden) mListView.Columns.Add(columnHeader);
+            else columnsHiddenList.Add(columnIndex);
+
+            columnIndex++;
         }
 
         public void AddEntry(object[] items)
         {
             // Create List<object> to store object array
-            List<object> list = new List<object>();
-            if (mListView.CheckBoxes) list.Add("");
-            list.AddRange(items);
+            List<Item> itemList = new List<Item>();
+            List<object> listViewList = new List<object>();
+            if (mListView.CheckBoxes) itemList.Add(new Item("", false)); listViewList.Add("");
+
+            for (int x = 0; x < items.Length; x++)
+            {
+                bool hidden = columnsHiddenList.Contains(x + 1);
+                itemList.Add(new Item(items[x], hidden));
+                if (!hidden) listViewList.Add(items[x]);
+            }
+
             // Convert List<object> to string array
-            string[] itemsStr = ((IEnumerable)list).Cast<object>()
+            string[] itemsStr = ((IEnumerable)listViewList).Cast<object>()
                                  .Select(x => x.ToString())
                                  .ToArray();
             // Create ListViewItem from string array
@@ -58,6 +75,7 @@ namespace DynamicList
             //if (font != null) listViewItem.Font = font;
             // Add the ListViewItem
             mListView.Items.Add(listViewItem);
+            rowsList.Add(new Row(itemList));
         }
 
         public void SetCheckboxes(bool checkboxes)
@@ -98,14 +116,29 @@ namespace DynamicList
 
         public void CheckItems(int columnIndex, object[] items)
         {
-            List<string> itemsList = new List<string>();
-            foreach (object item in items) itemsList.Add(item.ToString());
+            // Deselect all first
+            foreach (ListViewItem listViewItem in mListView.Items) { listViewItem.Checked = false; }
 
-            foreach (ListViewItem listViewItem in mListView.Items)
+            for (int i = 0; i < items.Length; i++)
             {
-                string curText = listViewItem.SubItems[columnIndex].Text;
-                listViewItem.Checked = itemsList.Contains(curText);
+                for (int r = 0; r < rowsList.Count; r++)
+                {
+                    Row row = rowsList[r];
+                    List<Item> itemList = row.itemList;
+
+                    //bool hidden = columnsHiddenList.Contains(i);
+                    Item item = itemList[columnIndex];
+                    if (items[i].ToString() == item.entry.ToString()) mListView.Items[r].Checked = true;
+                }
             }
+            //List<string> itemsList = new List<string>();
+            //foreach (object item in items) itemsList.Add(item.ToString());
+
+            //foreach (ListViewItem listViewItem in mListView.Items)
+            //{
+            //    string curText = listViewItem.SubItems[columnIndex].Text;
+            //    listViewItem.Checked = itemsList.Contains(curText);
+            //}
             mListView.Invalidate(true);
         }
 
@@ -180,23 +213,23 @@ namespace DynamicList
             else
             {
                 // Determine if clicked column is already the column that is being sorted.
-                if (e.Column == lvwColumnSorter.SortColumn)
+                if (e.Column == listViewColumnSorter.SortColumn)
                 {
                     // Reverse the current sort direction for this column.
-                    if (lvwColumnSorter.Order == SortOrder.Ascending)
+                    if (listViewColumnSorter.Order == SortOrder.Ascending)
                     {
-                        lvwColumnSorter.Order = SortOrder.Descending;
+                        listViewColumnSorter.Order = SortOrder.Descending;
                     }
                     else
                     {
-                        lvwColumnSorter.Order = SortOrder.Ascending;
+                        listViewColumnSorter.Order = SortOrder.Ascending;
                     }
                 }
                 else
                 {
                     // Set the column number that is to be sorted; default to ascending.
-                    lvwColumnSorter.SortColumn = e.Column;
-                    lvwColumnSorter.Order = SortOrder.Ascending;
+                    listViewColumnSorter.SortColumn = e.Column;
+                    listViewColumnSorter.Order = SortOrder.Ascending;
                 }
 
                 // Perform the sort with these new sort options.
@@ -237,7 +270,15 @@ namespace DynamicList
         private void mListView_DrawSubItem(object sender, DrawListViewSubItemEventArgs e) { e.DrawDefault = true; }
 
         private void mListView_ItemChecked(object sender, ItemCheckedEventArgs e) { SetCheckboxTag(); }
-        #endregion
 
+        private void mListView_ColumnWidthChanging(object sender, ColumnWidthChangingEventArgs e)
+        {
+            if (e.ColumnIndex == 0 && mListView.CheckBoxes)
+            {
+                e.Cancel = true;
+                e.NewWidth = mListView.Columns[e.ColumnIndex].Width;
+            }
+        }
+        #endregion
     }
 }
