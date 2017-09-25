@@ -1,6 +1,6 @@
 ﻿namespace DynamicList
 {
-    partial class DynamicList
+    partial class List
     {
         /// <summary>
         /// Required designer variable.
@@ -27,40 +27,58 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.listView = new System.Windows.Forms.ListView();
+            this.mListView = new System.Windows.Forms.ListView();
+            this.checkBox = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SuspendLayout();
             // 
-            // listView
+            // mListView
             // 
-            this.listView.CheckBoxes = true;
-            this.listView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listView.FullRowSelect = true;
-            this.listView.Location = new System.Drawing.Point(0, 0);
-            this.listView.Name = "listView";
-            this.listView.Size = new System.Drawing.Size(1014, 677);
-            this.listView.TabIndex = 0;
-            this.listView.UseCompatibleStateImageBehavior = false;
-            this.listView.View = System.Windows.Forms.View.Details;
-            this.listView.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.listView_ColumnClick);
-            this.listView.DrawColumnHeader += new System.Windows.Forms.DrawListViewColumnHeaderEventHandler(this.listView_DrawColumnHeader);
-            this.listView.DrawItem += new System.Windows.Forms.DrawListViewItemEventHandler(this.listView_DrawItem);
-            this.listView.DrawSubItem += new System.Windows.Forms.DrawListViewSubItemEventHandler(this.listView_DrawSubItem);
+            this.mListView.AutoArrange = false;
+            this.mListView.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.mListView.CheckBoxes = true;
+            this.mListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.checkBox});
+            this.mListView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.mListView.FullRowSelect = true;
+            this.mListView.Location = new System.Drawing.Point(0, 0);
+            this.mListView.Name = "mListView";
+            this.mListView.OwnerDraw = true;
+            this.mListView.Size = new System.Drawing.Size(800, 600);
+            this.mListView.Sorting = System.Windows.Forms.SortOrder.Ascending;
+            this.mListView.TabIndex = 0;
+            this.mListView.UseCompatibleStateImageBehavior = false;
+            this.mListView.View = System.Windows.Forms.View.Details;
+            this.mListView.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.mListView_ColumnClick);
+            this.mListView.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.mListView_ColumnWidthChanging);
+            this.mListView.DrawColumnHeader += new System.Windows.Forms.DrawListViewColumnHeaderEventHandler(this.mListView_DrawColumnHeader);
+            this.mListView.DrawItem += new System.Windows.Forms.DrawListViewItemEventHandler(this.mListView_DrawItem);
+            this.mListView.DrawSubItem += new System.Windows.Forms.DrawListViewSubItemEventHandler(this.mListView_DrawSubItem);
+            this.mListView.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.mListView_ItemChecked);
             // 
-            // DynamicList
+            // checkBox
+            // 
+            this.checkBox.Text = "";
+            this.checkBox.Width = 22;
+            // 
+            // List
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1014, 677);
-            this.Controls.Add(this.listView);
+            this.AutoScroll = true;
+            this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.ClientSize = new System.Drawing.Size(800, 600);
+            this.Controls.Add(this.mListView);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Name = "DynamicList";
+            this.Name = "List";
+            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "Dynamic List";
             this.ResumeLayout(false);
 
         }
         #endregion
 
-        public System.Windows.Forms.ListView listView;
+        public System.Windows.Forms.ListView mListView;
+        private System.Windows.Forms.ColumnHeader checkBox;
     }
 }
 
